@@ -25,6 +25,7 @@ for t in "${targets[@]}"; do
     while [[ ! $results =~ "finished" ]]; do
         echo "Waiting for scrub to finish for '$t'"
         sleep 10
+        results="$(btrfs scrub status "$t" 2>&1)"
     done
 done
 {% endif %}
