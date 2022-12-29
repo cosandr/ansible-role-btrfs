@@ -1,0 +1,9 @@
+---
+
+- name: Include scrub tasks
+  ansible.builtin.include_tasks:
+    file: scrub.yml
+    apply:
+      tags: ["scrub"]
+  when: btrfs_scrub_targets | length > 0
+  tags: ["scrub"]

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+targets=(
+{% for t in btrfs_scrub_targets %}
+"{{ t }}"
+{% endfor %}
+)
+
+for t in "${targets[@]}"; do
+    btrfs scrub cancel "$t"
+done

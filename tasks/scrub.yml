@@ -1,0 +1,63 @@
+---
+
+- name: Copy scrub service
+  ansible.builtin.copy:
+    src: "btrfs-scrub.service"
+    dest: "/etc/systemd/system/btrfs-scrub.service"
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload systemd
+
+- name: Copy scrub timer
+  ansible.builtin.template:
+    src: "btrfs-scrub.timer.j2"
+    dest: "/etc/systemd/system/btrfs-scrub.timer"
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload systemd
+
+- name: Copy scrub scripts
+  ansible.builtin.template:
+    src: "{{ item }}.sh.j2"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - "btrfs-scrub"
+    - "btrfs-scrub-cancel"
+
+- name: Setup email notifications
+  when: btrfs_scrub_email
+  block:
+    - name: Copy scrub email service
+      ansible.builtin.copy:
+        src: "btrfs-scrub-mail.service"
+        dest: "/etc/systemd/system/btrfs-scrub-mail.service"
+        owner: root
+        group: root
+        mode: 0644
+      notify: Reload systemd
+
+    - name: Copy scrub email script
+      ansible.builtin.template:
+        src: "btrfs-scrub-mail.sh.j2"
+        dest: "/usr/local/bin/btrfs-scrub-mail"
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Enable scrub email service
+      ansible.builtin.systemd:
+        name: btrfs-scrub-mail.service
+        enabled: true
+        daemon_reload: true
+
+- name: Enable and start scrub timer
+  ansible.builtin.systemd:
+    name: btrfs-scrub.timer
+    state: started
+    enabled: true
+    daemon_reload: true

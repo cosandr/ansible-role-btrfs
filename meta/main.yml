@@ -1,0 +1,22 @@
+---
+
+galaxy_info:
+  role_name: btrfs
+  author: Andrei Costescu
+  namespace: cosandr
+  description: Ansible role for setting up btrfs.
+
+  issue_tracker_url: https://github.com/cosandr/ansible-role-btrfs/issues
+
+  license: MIT
+
+  min_ansible_version: "2.12"
+
+  platforms:
+    - name: Fedora
+      versions:
+        - "any"
+
+  galaxy_tags: []
+
+dependencies: []

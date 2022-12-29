@@ -1,0 +1,9 @@
+[Unit]
+Description=Scrub BTRFS disks every month
+
+[Timer]
+Persistent=yes
+OnCalendar={{ btrfs_scrub_oncalendar }}
+
+[Install]
+WantedBy=timers.target

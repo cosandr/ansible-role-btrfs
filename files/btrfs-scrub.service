@@ -1,0 +1,7 @@
+[Unit]
+Description=Scrub all BTRFS disks
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/btrfs-scrub
+ExecStop=-/usr/local/bin/btrfs-scrub-cancel

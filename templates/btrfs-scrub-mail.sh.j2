@@ -1,0 +1,29 @@
+#!/bin/bash
+
+targets=(
+{% for t in btrfs_scrub_targets %}
+"{{ t }}"
+{% endfor %}
+)
+
+mail_content=""
+
+for t in "${targets[@]}"; do
+    results="$(btrfs scrub status "$t" 2>&1)"
+    ex_code=$?
+    if [[ $ex_code -ne 0 || ! $results =~ "no errors found" ]]; then
+        mail_content+="# $t\n$results\n"
+    fi
+done
+
+if [[ -z $mail_content ]]; then
+    echo "No errors detected"
+    exit 0
+fi
+
+mail \
+{% if btrfs_scrub_from_email %}
+    -r "{{ btrfs_scrub_from_email }}" \
+{% endif %}
+    -s "btrfs scrub had errors" \
+    "{{ btrfs_scrub_email }}" <<< "$mail_content"

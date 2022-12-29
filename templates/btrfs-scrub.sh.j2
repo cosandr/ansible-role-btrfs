@@ -1,0 +1,30 @@
+#!/bin/bash
+
+targets=(
+{% for t in btrfs_scrub_targets %}
+"{{ t }}"
+{% endfor %}
+)
+
+for t in "${targets[@]}"; do
+{% if btrfs_scrub_parallel %}
+    btrfs scrub start "$t"
+{% else %}
+    btrfs scrub start -B "$t"
+{% endif %}
+done
+
+{% if btrfs_scrub_parallel %}
+for t in "${targets[@]}"; do
+    results="$(btrfs scrub status "$t" 2>&1)"
+    ex_code=$?
+    if [[ $ex_code -ne 0 ]]; then
+        echo "Cannot get scrub status for '$t'"
+        continue
+    fi
+    while [[ ! $results =~ "finished" ]]; do
+        echo "Waiting for scrub to finish for '$t'"
+        sleep 10
+    done
+done
+{% endif %}

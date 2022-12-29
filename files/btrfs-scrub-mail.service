@@ -1,0 +1,10 @@
+[Unit]
+Description=Email BTRFS scrub results
+After=btrfs-scrub.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/btrfs-scrub-mail
+
+[Install]
+WantedBy=btrfs-scrub.service

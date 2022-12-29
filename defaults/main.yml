@@ -1,0 +1,8 @@
+---
+
+btrfs_scrub_email: ""
+btrfs_scrub_from_email: ""
+btrfs_scrub_targets: []
+# 3am on the 1st of every month
+btrfs_scrub_oncalendar: "*-*-01 03:00:00"
+btrfs_scrub_parallel: false
