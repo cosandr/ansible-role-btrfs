@@ -6,13 +6,25 @@ targets=(
 {% endfor %}
 )
 
+wait_scrub_finished() {
+    for i in $(seq 1 30); do
+        if [[ "$(btrfs scrub status "$1" 2>&1)" =~ "Status:.*finished" ]]; then
+            return
+        fi
+        echo "Waiting for scrub on '$1' to finish" >&2
+        sleep 10
+    done
+    echo "Timed out waiting for scrub on '$1' to finish" >&2
+}
+
 mail_content=""
 
 for t in "${targets[@]}"; do
+    wait_scrub_finished "$t"
     results="$(btrfs scrub status "$t" 2>&1)"
     ex_code=$?
     if [[ $ex_code -ne 0 || ! $results =~ "no errors found" ]]; then
-        mail_content+="# $t\n$results\n"
+        printf -v mail_content '%s# %s\n%s\n' "$mail_content" "$t" "$results"
     fi
 done
 
